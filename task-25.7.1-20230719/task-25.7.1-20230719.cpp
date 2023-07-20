@@ -66,7 +66,7 @@ int main() {
 		if (res->row_count == 0)
 		{
 			mysql_query(&mysql, "CREATE TABLE users(user_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, username VARCHAR(32) NOT NULL UNIQUE, name VARCHAR(32) NOT NULL, email VARCHAR(64) UNIQUE, hash_password BINARY(20) NOT NULL)");
-			mysql_query(&mysql, "CREATE TABLE messages(message_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, sender_id INT NOT NULL REFERENCES users (user_id), receiver_id INT, text TEXT NOT NULL, time INT NOT NULL, isReceived BIT, isRead BIT)");		
+			mysql_query(&mysql, "CREATE TABLE messages(message_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, sender_name VARCHAR(32) NOT NULL REFERENCES users (username), receiver_name VARCHAR(32), text TEXT NOT NULL, time INT NOT NULL, isReceived BIT, isRead BIT)");		
 			mysql_query(&mysql, "SHOW TABLES");
 			res = mysql_store_result(&mysql);
 		}
@@ -89,9 +89,14 @@ int main() {
 
 	// добавляем пользователей
 	mysql_query(&mysql, "INSERT INTO users(username, name, email, hash_password) VALUES ('alex78', 'Aleksey Ivanov', 'alex78@mail.ru', 0xb1b3773a05c0ed0176787a4f1574ff0075f7521e)");
-	mysql_query(&mysql, "INSERT INTO users(username, name, email, hash_password) VALUES ('terinator', 'Alex Topor', 'terminator@mail.ru', 0x23c6834b1d353eabf976e524ed489c812ff86a7d)");
+	mysql_query(&mysql, "INSERT INTO users(username, name, email, hash_password) VALUES ('terminator', 'Alex Topor', 'terminator@mail.ru', 0x23c6834b1d353eabf976e524ed489c812ff86a7d)");
+	mysql_query(&mysql, "INSERT INTO users(username, name, email, hash_password) VALUES ('krasotkaUSA', 'Tanya B.', 'tanya_b@gmail.com', 0x49080024ca34857828182c58b07e0fe89ce53acc)");
 
-	mysql_query(&mysql, "INSERT INTO messages(sender_id, receiver_id, text, time, isReceived, isRead) VALUES (1, 3, 'Hello!', 1689854113, 0, 0)");
+	// добавляем сообщения
+	mysql_query(&mysql, "INSERT INTO messages(sender_name, receiver_name, text, time, isReceived, isRead) VALUES (alex78, terminator, 'Hello!', 1689854113, 0, 0)");
+	mysql_query(&mysql, "INSERT INTO messages(sender_name, receiver_name, text, time, isReceived, isRead) VALUES (terminator, alex78, 'Hi bro)', 1689854222, 0, 0)");
+	mysql_query(&mysql, "INSERT INTO messages(sender_name, receiver_name, text, time, isReceived, isRead) VALUES (krasotkaUSA, all, 'Hello everyone', 1689856532, 0, 0)");
+
 
 
 	// Закрываем соединение с базой данных

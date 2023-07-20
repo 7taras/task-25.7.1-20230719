@@ -4,7 +4,7 @@
 // Серверное приложение имеет связь с БД MQSQL 7tChat, в которой две таблицы (users и messasges, 
 // описание ниже), которые хранят всю информацию чата.
 // Клиентское приложение отправляет команды (например отправка сообщения или прием), на которые 
-// отвечает серверное (например, команда успешно выполнено или ошибка).
+// отвечает серверное (например, команда успешно выполнена или ошибка).
 // 
 // Таблица users
 //		user_id 
@@ -30,11 +30,13 @@
 
 
 #include <iostream>
+#include <string>
 #include "mysql.h"
 
 using namespace std;
 
-int main() {
+int main() 
+{
 	MYSQL mysql; // Дескриптор соединения c MySql
 	MYSQL_RES* res;
 	MYSQL_ROW row;
@@ -42,17 +44,20 @@ int main() {
 
 	mysql_init(&mysql);
 
-	if (&mysql == NULL) {
+	if (&mysql == NULL) 
+	{
 		// Если дескриптор не получен — выводим сообщение об ошибке
 		cout << "Error: can't create MySQL-descriptor" << endl;
 	}
 
 	// Подключаемся к серверу
-	if (!mysql_real_connect(&mysql, "localhost", "root", "Pass4root$", "7tChat", 0, NULL, 0)) {
+	if (!mysql_real_connect(&mysql, "localhost", "root", "Pass4root$", "7tChat", 0, NULL, 0)) 
+	{
 		// Если нет возможности установить соединение с БД выводим сообщение об ошибке
 		cout << "Error: can't connect to database " << mysql_error(&mysql) << endl;
 	}
-	else {
+	else 
+	{
 		// Если соединение успешно установлено выводим фразу — "Success!"
 		cout << "Connection to database - Success!" << endl;
 	}
@@ -87,17 +92,55 @@ int main() {
 	}
 
 
-	// добавляем пользователей
+	// добавляем пользователей для теста
 	mysql_query(&mysql, "INSERT INTO users(username, name, email, hash_password) VALUES ('alex78', 'Aleksey Ivanov', 'alex78@mail.ru', 0xb1b3773a05c0ed0176787a4f1574ff0075f7521e)");
 	mysql_query(&mysql, "INSERT INTO users(username, name, email, hash_password) VALUES ('terminator', 'Alex Topor', 'terminator@mail.ru', 0x23c6834b1d353eabf976e524ed489c812ff86a7d)");
 	mysql_query(&mysql, "INSERT INTO users(username, name, email, hash_password) VALUES ('krasotkaUSA', 'Tanya B.', 'tanya_b@gmail.com', 0x49080024ca34857828182c58b07e0fe89ce53acc)");
 
-	// добавляем сообщения
-	mysql_query(&mysql, "INSERT INTO messages(sender_name, receiver_name, text, time, isReceived, isRead) VALUES (alex78, terminator, 'Hello!', 1689854113, 0, 0)");
-	mysql_query(&mysql, "INSERT INTO messages(sender_name, receiver_name, text, time, isReceived, isRead) VALUES (terminator, alex78, 'Hi bro)', 1689854222, 0, 0)");
-	mysql_query(&mysql, "INSERT INTO messages(sender_name, receiver_name, text, time, isReceived, isRead) VALUES (krasotkaUSA, all, 'Hello everyone', 1689856532, 0, 0)");
+	// добавляем сообщения для теста
+	mysql_query(&mysql, "INSERT INTO messages(sender_name, receiver_name, text, time, isReceived, isRead) VALUES ('alex78', 'terminator', 'Hello!', 1689854113, 0, 0)");
+	mysql_query(&mysql, "INSERT INTO messages(sender_name, receiver_name, text, time, isReceived, isRead) VALUES ('terminator', 'alex78', 'Hi bro)', 1689854222, 0, 0)");
+	mysql_query(&mysql, "INSERT INTO messages(sender_name, receiver_name, text, time, isReceived, isRead) VALUES ('krasotkaUSA', 'all', 'Hello everyone', 1689856532, 0, 0)");
 
+	// считываем сообщения, хранящиеся в БД
+	mysql_query(&mysql, "SELECT * FROM users");
+	if (res = mysql_store_result(&mysql))
+	{
+		cout << "\nUsers:\n";
 
+		while (row = mysql_fetch_row(res))
+		{
+			for (int i = 0; i < mysql_num_fields(res); i++)
+			{
+				cout << row[i] << "  ";
+			}
+			cout << endl;
+		}
+	}
+	else
+	{
+		cout << "Ошибка MySql номер " << mysql_error(&mysql);
+	}
+
+	// считываем сообщения, хранящиеся в БД
+	mysql_query(&mysql, "SELECT * FROM messages");
+	if (res = mysql_store_result(&mysql))
+	{
+		cout << "\nMessages:\n" ;
+		
+		while (row = mysql_fetch_row(res))
+		{
+			for (int i = 0; i < mysql_num_fields(res); i++)
+			{
+				cout << row[i] << "  ";
+			}
+			cout << endl;
+		}
+	}
+	else
+	{
+		cout << "Ошибка MySql номер " << mysql_error(&mysql);
+	}
 
 	// Закрываем соединение с базой данных
 	mysql_close(&mysql);

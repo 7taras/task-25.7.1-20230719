@@ -1,4 +1,11 @@
-﻿// task-25.7.1-20230719.cpp : This file contains the 'main' function. Program execution begins and ends there.
+﻿// task-25.7.1-20230719.cpp : 
+// 
+// Чат имеет клиент-серверную архитектуру.
+// Серверное приложение имеет связь с БД MQSQL 7tChat, в которой две таблицы (users и messasges, 
+// описание ниже), которые хранят всю информацию чата.
+// Клиентское приложение отправляет команды (например отправка сообщения или прием), на которые 
+// отвечает серверное (например, команда успешно выполнено или ошибка).
+// 
 // Таблица users
 //		user_id 
 //		username	- уникальное имя пользователя чата
@@ -41,7 +48,7 @@ int main() {
 	}
 
 	// Подключаемся к серверу
-	if (!mysql_real_connect(&mysql, "localhost", "root", "Letsgo777", "7tChat", 0, NULL, 0)) {
+	if (!mysql_real_connect(&mysql, "localhost", "root", "Pass4root$", "7tChat", 0, NULL, 0)) {
 		// Если нет возможности установить соединение с БД выводим сообщение об ошибке
 		cout << "Error: can't connect to database " << mysql_error(&mysql) << endl;
 	}
@@ -80,8 +87,11 @@ int main() {
 	}
 
 
-	// добавляем пользователя
+	// добавляем пользователей
 	mysql_query(&mysql, "INSERT INTO users(username, name, email, hash_password) VALUES ('alex78', 'Aleksey Ivanov', 'alex78@mail.ru', 0xb1b3773a05c0ed0176787a4f1574ff0075f7521e)");
+	mysql_query(&mysql, "INSERT INTO users(username, name, email, hash_password) VALUES ('terinator', 'Alex Topor', 'terminator@mail.ru', 0x23c6834b1d353eabf976e524ed489c812ff86a7d)");
+
+	mysql_query(&mysql, "INSERT INTO messages(sender_id, receiver_id, text, time, isReceived, isRead) VALUES (1, 3, 'Hello!', 1689854113, 0, 0)");
 
 
 	// Закрываем соединение с базой данных
